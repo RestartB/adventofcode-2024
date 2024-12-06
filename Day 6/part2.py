@@ -132,8 +132,10 @@ for lineToTry in lines:
             charReplaced = lineToTry.index(char)
             lineToTry[lineToTry.index(char)] = "#"
             
-            if simulation(lines):
-                loops.append(lines)
+            temp = [line[:] for line in lines]
+            
+            if simulation(temp):
+                loops.append(temp)
             
             lineToTry[charReplaced] = "." # Reset the place
 
