@@ -9,135 +9,120 @@ with open("input.txt", "r") as f:
         lines.append(list(line.rstrip("\n")))
 
 def simulation(lines):
-    try:
-        states = []
-        looping = False
+    states = []
 
-        while True:
-            # Calculate movement
-            for i, line in enumerate(lines):
-                # Moving up
-                if "^" in line:
-                    print("Moving up")
-                    arrowPos = line.index("^")
+    while True:
+        # Calculate movement
+        for i, line in enumerate(lines):
+            # Moving up
+            if "^" in line:
+                # print("Moving up")
+                arrowPos = line.index("^")
 
-                    if i == 0:
-                        looping = False
-                        raise IndexError
+                if i == 0:
+                    return False
+                
+                if lines[i - 1][arrowPos] == "#":
+                    # print("Hit a wall")
+                    line[arrowPos] = ">"
+
+                    if (i, arrowPos, '>') in states:
+                        return True
+                    else:
+                        states.append((i, arrowPos, '>'))
+                else:
+                    # print("Moved up")
+                    line[arrowPos] = "X"
+                    lines[i - 1][arrowPos] = "^"
                     
-                    if lines[i - 1][arrowPos] == "#":
-                        print("Hit a wall")
-                        line[arrowPos] = ">"
-
-                        if lines in states:
-                            looping = True
-                            raise IndexError
-                        else:
-                            states.append(lines)
+                    if (i - 1, arrowPos, '^') in states:
+                        return True
                     else:
-                        print("Moved up")
-                        line[arrowPos] = "X"
-                        lines[i - 1][arrowPos] = "^"
-                        
-                        if lines in states:
-                            looping = True
-                            raise IndexError
-                        else:
-                            states.append(lines)
-                elif ">" in line:
-                    print("Moving right")
-                    arrowPos = line.index(">")
+                        states.append((i - 1, arrowPos, '^'))
+            elif ">" in line:
+                # print("Moving right")
+                arrowPos = line.index(">")
 
-                    if lines[i][arrowPos + 1] == "#":
-                        print("Hit a wall")
-                        line[arrowPos] = "v"
+                if arrowPos == len(line) - 1:
+                    return False
 
-                        if lines in states:
-                            looping = True
-                            raise IndexError
-                        else:
-                            states.append(lines)
+                if lines[i][arrowPos + 1] == "#":
+                    # print("Hit a wall")
+                    line[arrowPos] = "v"
+
+                    if (i, arrowPos, 'v') in states:
+                        return True
                     else:
-                        print("Moved right")
-                        line[arrowPos] = "X"
-                        lines[i][arrowPos + 1] = ">"
+                        states.append((i, arrowPos, 'v'))
+                else:
+                    # print("Moved right")
+                    line[arrowPos] = "X"
+                    lines[i][arrowPos + 1] = ">"
 
-                        if lines in states:
-                            looping = True
-                            raise IndexError
-                        else:
-                            states.append(lines)
-                elif "v" in line:
-                    print("Moving down")
-                    arrowPos = line.index("v")
-
-                    if lines[i + 1][arrowPos] == "#":
-                        print("Hit a wall")
-                        line[arrowPos] = "<"
-
-                        if lines in states:
-                            looping = True
-                            raise IndexError
-                        else:
-                            states.append(lines)
+                    if (i, arrowPos + 1, '>') in states:
+                        return True
                     else:
-                        print("Moved down")
-                        line[arrowPos] = "X"
-                        lines[i + 1][arrowPos] = "v"
+                        states.append((i, arrowPos + 1, '>'))
+            elif "v" in line:
+                # print("Moving down")
+                arrowPos = line.index("v")
 
-                        if lines in states:
-                            looping = True
-                            raise IndexError
-                        else:
-                            states.append(lines)
-                elif "<" in line:
-                    print("Moving left")
-                    arrowPos = line.index("<")
+                if i == len(lines) - 1:
+                    return False
 
-                    if arrowPos == 0:
-                        looping = False
-                        raise IndexError
+                if lines[i + 1][arrowPos] == "#":
+                    # print("Hit a wall")
+                    line[arrowPos] = "<"
 
-                    if lines[i][arrowPos - 1] == "#":
-                        print("Hit a wall")
-                        line[arrowPos] = "^"
-
-                        if lines in states:
-                            looping = True
-                            raise IndexError
-                        else:
-                            states.append(lines)
+                    if (i, arrowPos, '<') in states:
+                        return True
                     else:
-                        print("Moved left")
-                        line[arrowPos] = "X"
-                        lines[i][arrowPos - 1] = "<"
+                        states.append((i, arrowPos, '<'))
+                else:
+                    # print("Moved down")
+                    line[arrowPos] = "X"
+                    lines[i + 1][arrowPos] = "v"
 
-                        if lines in states:
-                            looping = True
-                            raise IndexError
-                        else:
-                            states.append(lines)
-    except IndexError:
-        print("Guard has left")
+                    if (i + 1, arrowPos, 'v') in states:
+                        return True
+                    else:
+                        states.append((i + 1, arrowPos, 'v'))
+            elif "<" in line:
+                # print("Moving left")
+                arrowPos = line.index("<")
 
-        if looping:
-            print("Looping")
-            return True
-        else:
-            return False
+                if arrowPos == 0:
+                    return False
 
-for lineToTry in lines:
-    for char in lineToTry:
-        if char == ".":
-            charReplaced = lineToTry.index(char)
-            lineToTry[lineToTry.index(char)] = "#"
-            
+                if lines[i][arrowPos - 1] == "#":
+                    # print("Hit a wall")
+                    line[arrowPos] = "^"
+
+                    if (i, arrowPos, '^') in states:
+                        return True
+                    else:
+                        states.append((i, arrowPos, '^'))
+                else:
+                    # print("Moved left")
+                    line[arrowPos] = "X"
+                    lines[i][arrowPos - 1] = "<"
+
+                    if (i - 1, arrowPos, '<') in states:
+                        return True
+                    else:
+                        states.append((i - 1, arrowPos, '<'))
+
+for y in range(len(lines)):
+    for x in range(len(lines[y])):
+        if lines[y][x] == ".":
             temp = [line[:] for line in lines]
+            temp[y][x] = '#'
+            res = simulation(temp)
+            # print(res)
+            print("\n".join(["".join(x) for x in temp]))
             
-            if simulation(temp):
+            if res:
                 loops.append(temp)
-            
-            lineToTry[charReplaced] = "." # Reset the place
 
 print()
 
@@ -145,6 +130,6 @@ print(f"Loops: {len(loops)}")
 
 for loop in loops:
     for line in loop:
-        print("".join(line))
+        pass#print("".join(line))
 
-    print()
+    #print()
